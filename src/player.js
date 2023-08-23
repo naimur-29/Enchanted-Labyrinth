@@ -6,7 +6,7 @@ class Player {
       y: this.location.index.j * w + w / 2,
     };
     this.isReady = false;
-    this.size = (w * 2) / 3;
+    this.size = w - w / 5;
     this.visited = [this.location];
   }
 
@@ -31,5 +31,11 @@ class Player {
       ellipse(this.pos.x, this.pos.y, this.size);
       stroke(0, 0, 0);
     }
+  }
+
+  clear() {
+    this.isReady = false;
+    this.size = w - w / 5;
+    this.visited = [this.location];
   }
 }

@@ -1,7 +1,7 @@
 function getIndexFrom2d(i, j) {
-  if (i < 0 || i > cols - 1 || j < 0 || j > rows - 1) return undefined;
+  if (i < 0 || i > gridSize - 1 || j < 0 || j > gridSize - 1) return undefined;
 
-  return i + j * cols;
+  return i + j * gridSize;
 }
 
 function removeWalls(currentCell, nextCell) {

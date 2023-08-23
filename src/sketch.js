@@ -6,9 +6,18 @@ Array.prototype.isEmpty = function () {
   }
 };
 
-let cols,
-  rows,
-  w = 40;
+let canvas, levelText;
+
+let gridSize = 2;
+
+let padding = innerWidth > 500 ? 30 : 10;
+
+let gridWidth = Math.min(innerWidth, innerHeight);
+gridWidth = Math.floor(gridWidth - (gridWidth * padding) / 100);
+
+let w = gridWidth / gridSize;
+
+let targetCell;
 
 let defaultKeys = {
   UP: false,
@@ -24,56 +33,34 @@ let keys = {
 // colors:
 let canvasColor = [220];
 let wallsColor = [0];
-let buildingColor = [255, 255, 255, 100];
+let buildingColor = [255, 255, 255, 200];
 let isVisitedColor = [100, 200, 255, 150];
 let playerVisitedColor = [255, 100, 200];
 
-let builder;
 let player;
+let builderCell;
 
-const grid = [];
-const stack = [];
-let canvas;
+let grid = [];
+let stack = [];
 
 function setup() {
-  canvas = createCanvas(400, 400);
-  canvas.addClass("canvas");
+  canvas = createCanvas(gridWidth, gridWidth);
+  canvas.parent(document.querySelector(".game-panel"));
   // frameRate(5);
 
-  document.querySelector(".canvas").addEventListener("pointerdown", (event) => {
-    const mouse = {
-      x: event.clientX,
-      y: event.clientY,
-    };
+  levelText = createP("Level 01");
+  levelText.parent(document.querySelector(".game-panel"));
+  levelText.addClass("level-text");
 
-    console.log(mouse, player.pos);
-
-    if (mouse.y < player.pos.y) {
-      keys = { ...defaultKeys };
-      keys.UP = true;
-    } else if (mouse.x < player.pos.x) {
-      keys = { ...defaultKeys };
-      keys.LEFT = true;
-    } else if (mouse.y > player.pos.y) {
-      keys = { ...defaultKeys };
-      keys.DOWN = true;
-    } else if (mouse.x > player.pos.x) {
-      keys = { ...defaultKeys };
-      keys.RIGHT = true;
-    }
-  });
-
-  cols = floor(width / w);
-  rows = floor(height / w);
-
-  for (let j = 0; j < rows; j++) {
-    for (let i = 0; i < cols; i++) {
+  for (let j = 0; j < gridSize; j++) {
+    for (let i = 0; i < gridSize; i++) {
       let cell = new Cell(i, j);
       grid.push(cell);
     }
   }
 
-  builder = grid[0];
+  builderCell = grid[0];
+  targetCell = grid[grid.length - 1];
 
   player = new Player({
     location: grid[0],
@@ -82,6 +69,38 @@ function setup() {
 
 function draw() {
   background(...canvasColor);
+
+  // check if player completed maze:
+  if (player.location === targetCell) {
+    if (gridSize > 21) {
+      noLoop();
+    } else {
+      gridSize++;
+      w = gridWidth / gridSize;
+    }
+
+    // update game level:
+    document.querySelector(".level-text").textContent =
+      "Level " + String(gridSize - 1 < 10 ? `0${gridSize - 1}` : gridSize - 1);
+
+    player.draw();
+
+    grid = [];
+    stack = [];
+
+    for (let j = 0; j < gridSize; j++) {
+      for (let i = 0; i < gridSize; i++) {
+        let cell = new Cell(i, j);
+        grid.push(cell);
+      }
+    }
+
+    keys = { ...defaultKeys };
+    builderCell = grid[0];
+    targetCell = grid[grid.length - 1];
+    player.at(grid[0]);
+    player.clear();
+  }
 
   // highlight isVisited cells:
   grid.forEach((cell) => {
@@ -95,6 +114,9 @@ function draw() {
     player.visited.forEach((cell) => cell.highlight(playerVisitedColor));
   }
 
+  // target cell/winning checkpoint:
+  if (player.isReady) targetCell.highlight(playerVisitedColor);
+
   // draw cells:
   for (let cell of grid) {
     cell.draw(wallsColor);
@@ -104,25 +126,26 @@ function draw() {
   player.draw();
 
   // highlight cells:
-  if (builder !== grid[0]) builder.highlight(isVisitedColor);
+  if (builderCell !== grid[0]) builderCell.highlight(isVisitedColor);
+
   stack.forEach((cell) => {
     cell.highlight(buildingColor);
   });
 
   // handle builders:
-  builder.isVisited = true;
-  let nextCell = builder.checkNeighbors();
+  builderCell.isVisited = true;
+  let nextCell = builderCell.checkNeighbors();
 
   if (nextCell !== undefined) {
-    removeWalls(builder, nextCell);
-    stack.push(builder);
-    builder = nextCell;
+    removeWalls(builderCell, nextCell);
+    stack.push(builderCell);
+    builderCell = nextCell;
   } else if (!stack.isEmpty()) {
-    builder = stack.pop();
+    builderCell = stack.pop();
   }
 
   // handle player:
-  if (builder === grid[0]) {
+  if (builderCell === grid[0]) {
     player.isReady = true;
     frameRate(30);
   }
@@ -132,18 +155,47 @@ function draw() {
   }
 }
 
+// pc control:
 window.addEventListener("keypress", (event) => {
-  if (event.key.toLocaleLowerCase() === "w") {
-    keys = { ...defaultKeys };
-    keys.UP = true;
-  } else if (event.key.toLocaleLowerCase() === "a") {
-    keys = { ...defaultKeys };
-    keys.LEFT = true;
-  } else if (event.key.toLocaleLowerCase() === "s") {
-    keys = { ...defaultKeys };
-    keys.DOWN = true;
-  } else if (event.key.toLocaleLowerCase() === "d") {
-    keys = { ...defaultKeys };
-    keys.RIGHT = true;
+  if (player.isReady) {
+    if (event.key.toLocaleLowerCase() === "w") {
+      keys = { ...defaultKeys };
+      keys.UP = true;
+    } else if (event.key.toLocaleLowerCase() === "a") {
+      keys = { ...defaultKeys };
+      keys.LEFT = true;
+    } else if (event.key.toLocaleLowerCase() === "s") {
+      keys = { ...defaultKeys };
+      keys.DOWN = true;
+    } else if (event.key.toLocaleLowerCase() === "d") {
+      keys = { ...defaultKeys };
+      keys.RIGHT = true;
+    }
   }
 });
+
+// phone control:
+const leftBtn = document.getElementById("LEFT");
+const rightBtn = document.getElementById("RIGHT");
+const upBtn = document.getElementById("UP");
+const downBtn = document.getElementById("DOWN");
+
+leftBtn.onpointerdown = function () {
+  keys = { ...defaultKeys };
+  keys.LEFT = true;
+};
+
+rightBtn.onpointerdown = function () {
+  keys = { ...defaultKeys };
+  keys.RIGHT = true;
+};
+
+upBtn.onpointerdown = function () {
+  keys = { ...defaultKeys };
+  keys.UP = true;
+};
+
+downBtn.onpointerdown = function () {
+  keys = { ...defaultKeys };
+  keys.DOWN = true;
+};

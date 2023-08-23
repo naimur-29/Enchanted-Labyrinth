@@ -5,12 +5,75 @@ body {
 }
 
 body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+.game-panel {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+}
+
+@media (hover: none) {
+  .game-panel {
+    height: 90vh;
+    padding: 10% 0;
+    justify-content: flex-start;
+  }
 }
 
 canvas {
   display: block;
+  border: 3px solid black;
+}
+
+.level-text {
+  font-family: monospace;
+  font-size: xxx-large;
+  font-weight: 500;
+}
+
+.control-panel {
+  background-color: #0f172a33;
+  padding: 12px;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+@media (hover: hover) {
+  .control-panel {
+    display: none;
+  }
+}
+
+.control-panel .left-right,
+.control-panel .up-down {
+  display: flex;
+  gap: 12px;
+}
+
+.control-panel .up-down {
+  flex-direction: column;
+}
+
+.control-panel .left-right > button,
+.control-panel .up-down > button {
+  width: 70px;
+  aspect-ratio: 1/1;
+  font-size: xx-large;
+  border-radius: 50%;
+  border: none;
+}
+
+.control-panel .left-right > button:active,
+.control-panel .up-down > button:active {
+  transform: scale(0.95);
 }
