@@ -37,6 +37,12 @@ canvas {
   font-weight: 500;
 }
 
+@media (max-width: 500px) {
+  .level-text {
+    font-size: xx-large;
+  }
+}
+
 .control-panel {
   background-color: #0f172a33;
   padding: 10px;

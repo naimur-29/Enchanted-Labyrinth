@@ -181,21 +181,29 @@ const upBtn = document.getElementById("UP");
 const downBtn = document.getElementById("DOWN");
 
 leftBtn.onpointerdown = function () {
-  keys = { ...defaultKeys };
-  keys.LEFT = true;
+  if (player.isReady) {
+    keys = { ...defaultKeys };
+    keys.LEFT = true;
+  }
 };
 
 rightBtn.onpointerdown = function () {
-  keys = { ...defaultKeys };
-  keys.RIGHT = true;
+  if (player.isReady) {
+    keys = { ...defaultKeys };
+    keys.RIGHT = true;
+  }
 };
 
 upBtn.onpointerdown = function () {
-  keys = { ...defaultKeys };
-  keys.UP = true;
+  if (player.isReady) {
+    keys = { ...defaultKeys };
+    keys.UP = true;
+  }
 };
 
 downBtn.onpointerdown = function () {
-  keys = { ...defaultKeys };
-  keys.DOWN = true;
+  if (player.isReady) {
+    keys = { ...defaultKeys };
+    keys.DOWN = true;
+  }
 };
