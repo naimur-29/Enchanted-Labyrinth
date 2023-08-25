@@ -126,6 +126,7 @@ function draw() {
   if (player.location === targetCell) {
     if (gridSize > 21) {
       noLoop();
+      window.navigator.vibrate([200, 100, 200]);
       alert("Congrats!🍾🎊🎉 You've Completed The Game!!");
 
       setTimeout(() => {
@@ -158,9 +159,11 @@ function draw() {
     player.at(grid[0]);
     player.visited = [player.location];
     player.lives--;
+    window.navigator.vibrate(200);
 
     if (player.lives <= 0) {
       noLoop();
+      window.navigator.vibrate([200, 100, 200]);
       alert("You Lost!! 😔");
 
       setTimeout(() => {
@@ -280,7 +283,6 @@ leftBtn.onpointerdown = function () {
   if (player.isReady) {
     playerKeys = { ...defaultKeys };
     playerKeys.LEFT = true;
-    window.navigator.vibrate(200);
   }
 };
 
@@ -288,7 +290,6 @@ rightBtn.onpointerdown = function () {
   if (player.isReady) {
     playerKeys = { ...defaultKeys };
     playerKeys.RIGHT = true;
-    window.navigator.vibrate(200);
   }
 };
 
@@ -296,7 +297,6 @@ upBtn.onpointerdown = function () {
   if (player.isReady) {
     playerKeys = { ...defaultKeys };
     playerKeys.UP = true;
-    window.navigator.vibrate(200);
   }
 };
 
@@ -304,6 +304,5 @@ downBtn.onpointerdown = function () {
   if (player.isReady) {
     playerKeys = { ...defaultKeys };
     playerKeys.DOWN = true;
-    window.navigator.vibrate(200);
   }
 };
