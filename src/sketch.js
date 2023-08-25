@@ -158,6 +158,7 @@ function draw() {
     player.at(grid[0]);
     player.visited = [player.location];
     player.lives--;
+    window.navigator.vibrate(200);
 
     if (player.lives <= 0) {
       noLoop();
