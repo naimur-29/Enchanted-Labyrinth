@@ -7,7 +7,7 @@ body {
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background-color: rgba(69, 14, 255, 0.1);
+  background-color: rgba(238, 3, 107, 0.1);
 }
 
 .temp {
@@ -47,7 +47,8 @@ canvas {
   font-weight: 500;
 }
 
-.lives-text {
+.lives-text,
+.level-text {
   margin-bottom: -28px;
 }
 
@@ -55,6 +56,11 @@ canvas {
   .level-text,
   .lives-text {
     font-size: xx-large;
+    margin-bottom: 0;
+  }
+
+  .lives-text {
+    margin-bottom: -28px;
   }
 }
 

@@ -10,7 +10,8 @@ let canvas;
 
 let gridSize = 5;
 
-let padding = innerWidth > 500 ? 30 : 10;
+let padding =
+  Math.abs(innerWidth - innerHeight) <= 100 ? 50 : innerWidth > 500 ? 30 : 10;
 
 let gridWidth = Math.min(innerWidth, innerHeight);
 gridWidth = Math.floor(gridWidth - (gridWidth * padding) / 100);
@@ -59,7 +60,7 @@ const colorPalettes = [
   },
 ];
 
-let color = colorPalettes[0];
+let color = colorPalettes[4];
 
 let canvasColor = [220];
 let wallsColor = [0];
