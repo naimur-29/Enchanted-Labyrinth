@@ -8,7 +8,7 @@ Array.prototype.isEmpty = function () {
 
 let canvas;
 
-let gridSize = 5;
+let gridSize = 2;
 
 let padding =
   Math.abs(innerWidth - innerHeight) <= 100 ? 50 : innerWidth > 500 ? 30 : 10;
@@ -124,12 +124,12 @@ function draw() {
 
   // check if player completed maze:
   if (player.location === targetCell) {
-    if (gridSize > 25) {
+    if (gridSize > 21) {
       noLoop();
       alert("Congrats!🍾🎊🎉 You've Completed The Game!!");
 
       setTimeout(() => {
-        gridSize = 5;
+        gridSize = 2;
         replay();
         loop();
       }, 500);
@@ -144,12 +144,14 @@ function draw() {
   }
 
   // check if enemy at targetCell; if move to random cell:
-  if (enemy.location === targetCell) {
-    enemy.at(grid[floor(random(1, grid.length))]);
+  if (gridSize >= 5) {
+    if (enemy.location === targetCell) {
+      enemy.at(grid[floor(random(1, grid.length))]);
+    }
   }
 
   // check if player touched enemy:
-  if (player.location === enemy.location) {
+  if (enemy.isReady && player.location === enemy.location) {
     player.at(grid[0]);
     player.visited = [player.location];
     player.lives--;
@@ -159,7 +161,7 @@ function draw() {
       alert("You Lost!! 😔");
 
       setTimeout(() => {
-        gridSize = 5;
+        gridSize = 2;
         replay();
         player.respawn();
         loop();
@@ -172,7 +174,7 @@ function draw() {
   document.querySelector(".lives-text").textContent = text;
 
   text =
-    "Level " + String(gridSize - 1 < 10 ? `0${gridSize - 4}` : gridSize - 1);
+    "Level " + String(gridSize - 1 < 10 ? `0${gridSize - 1}` : gridSize - 1);
   document.querySelector(".level-text").textContent = text;
 
   // highlight isVisited cells:
@@ -197,7 +199,9 @@ function draw() {
 
   // draw player & enemies:
   player.draw();
-  enemy.draw();
+  if (enemy.isReady) {
+    enemy.draw();
+  }
 
   // highlight cells:
   if (builderCell !== grid[0]) builderCell.highlight(isVisitedColor);
@@ -222,17 +226,22 @@ function draw() {
   if (!player.isReady && builderCell === grid[0]) {
     if (gridSize > 5) {
       removeRandomWalls(floor(gridSize / 2));
+      enemy = new Enemy({
+        location: grid[floor(random(1, grid.length - 2))],
+      });
+      enemy.isReady = true;
     }
 
     player.isReady = true;
-    enemy.isReady = true;
   }
 
   if (player.isReady) {
     handlePlayerMovement();
 
     // enemy movement:
-    handleEnemyMovement(enemyKeys, enemy);
+    if (enemy.isReady) {
+      handleEnemyMovement(enemyKeys, enemy);
+    }
   }
 }
 
