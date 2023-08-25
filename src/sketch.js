@@ -38,7 +38,9 @@ let isVisitedColor = [100, 200, 255, 150];
 let playerVisitedColor = [255, 100, 200];
 let targetColor = [255, 100, 200];
 
-let player;
+let player,
+  enemies = [];
+let numberOfEnemies = 1;
 let builderCell;
 
 let grid = [];
@@ -47,7 +49,7 @@ let stack = [];
 function setup() {
   canvas = createCanvas(gridWidth, gridWidth);
   canvas.parent(document.querySelector(".game-panel"));
-  // frameRate(5);
+  // frameRate(1);
 
   levelText = createP("Level 01");
   levelText.parent(document.querySelector(".game-panel"));
@@ -63,9 +65,20 @@ function setup() {
   builderCell = grid[0];
   targetCell = grid[grid.length - 1];
 
+  // spawning player:
   player = new Player({
     location: grid[0],
   });
+
+  // spawning enemies:
+  for (let ikr = 0; ikr < numberOfEnemies; ikr++) {
+    let enemyLocation = floor(random(1, grid.length - 2));
+    let enemy = new Enemy({
+      location: grid[enemyLocation],
+    });
+    enemies.push(enemy);
+    console.log(enemies);
+  }
 }
 
 function draw() {
@@ -103,6 +116,13 @@ function draw() {
     player.clear();
   }
 
+  // check if player touched enemy:
+  enemies.forEach((e) => {
+    if (player.location === e.location) {
+      player.at(grid[0]);
+    }
+  });
+
   // highlight isVisited cells:
   grid.forEach((cell) => {
     if (cell.isVisited) {
@@ -123,8 +143,9 @@ function draw() {
     cell.draw(wallsColor);
   }
 
-  // draw player:
+  // draw player & enemies:
   player.draw();
+  enemies.forEach((e) => e.draw());
 
   // highlight cells:
   if (builderCell !== grid[0]) builderCell.highlight(isVisitedColor);
@@ -148,9 +169,11 @@ function draw() {
   // handle player:
   if (!player.isReady && builderCell === grid[0]) {
     if (gridSize >= 5) {
-      removeRandomWalls(gridSize);
+      removeRandomWalls(floor(gridSize / 2));
     }
+
     player.isReady = true;
+    enemies.forEach((e) => (e.isReady = true));
     frameRate(30);
   }
 

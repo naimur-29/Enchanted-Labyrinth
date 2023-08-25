@@ -19,6 +19,8 @@ class Cell {
   }
 
   draw(colorRGB = canvasColor) {
+    // text(getIndexFrom2d(this.index.i, this.index.j), this.pos.x, this.pos.y);
+
     // draw cell borders:
     stroke(...colorRGB);
     strokeWeight(3);
@@ -88,25 +90,16 @@ class Cell {
 
   getNeighbor(n) {
     switch (n) {
-      case 0:
-        if (this.index.i > 0) {
-          let neighborIndex = getIndexFrom2d(this.index.i - 1, this.index.j);
+      case "TOP":
+        if (this.index.j > 0) {
+          let neighborIndex = getIndexFrom2d(this.index.i, this.index.j - 1);
           let neighbor = grid[neighborIndex];
 
           return neighbor;
         }
         break;
 
-      case 1:
-        if (this.index.j < gridSize - 1) {
-          let neighborIndex = getIndexFrom2d(this.index.i, this.index.j + 1);
-          let neighbor = grid[neighborIndex];
-
-          return neighbor;
-        }
-        break;
-
-      case 2:
+      case "RIGHT":
         if (this.index.i < gridSize - 1) {
           let neighborIndex = getIndexFrom2d(this.index.i + 1, this.index.j);
           let neighbor = grid[neighborIndex];
@@ -115,9 +108,18 @@ class Cell {
         }
         break;
 
-      case 3:
-        if (this.index.j > 0) {
-          let neighborIndex = getIndexFrom2d(this.index.i, this.index.j - 1);
+      case "BOTTOM":
+        if (this.index.j < gridSize - 1) {
+          let neighborIndex = getIndexFrom2d(this.index.i, this.index.j + 1);
+          let neighbor = grid[neighborIndex];
+
+          return neighbor;
+        }
+        break;
+
+      case "LEFT":
+        if (this.index.i > 0) {
+          let neighborIndex = getIndexFrom2d(this.index.i - 1, this.index.j);
           let neighbor = grid[neighborIndex];
 
           return neighbor;
