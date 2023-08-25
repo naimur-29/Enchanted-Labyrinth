@@ -34,12 +34,15 @@ class Player {
     }
   }
 
+  respawn() {
+    this.lives = 5;
+  }
+
   spawn() {
     this.location = grid[0];
     this.at(this.location);
     this.isReady = false;
     this.radius = w - w / 5;
     this.visited = [this.location];
-    this.lives = 5;
   }
 }

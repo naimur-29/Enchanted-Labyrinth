@@ -208,6 +208,7 @@ function draw() {
     if (player.location === enemy.location) {
       if (player.lives <= 0) {
         gridSize = 5;
+        player.respawn();
         replay();
       } else {
         player.at(grid[0]);
