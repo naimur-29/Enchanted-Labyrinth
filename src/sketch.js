@@ -34,6 +34,11 @@ let playerKeys = {
 // colors:
 const colorPalettes = [
   {
+    playerVisitedColor: [238, 3, 107],
+    isVisitedColor: [238, 3, 107, 100],
+    targetColor: [238, 3, 107],
+  },
+  {
     playerVisitedColor: [69, 14, 255],
     isVisitedColor: [69, 14, 255, 100],
     targetColor: [69, 14, 255],
@@ -53,14 +58,9 @@ const colorPalettes = [
     isVisitedColor: [2, 181, 159, 100],
     targetColor: [1, 117, 98],
   },
-  {
-    playerVisitedColor: [238, 3, 107],
-    isVisitedColor: [238, 3, 107, 100],
-    targetColor: [238, 3, 107],
-  },
 ];
 
-let color = colorPalettes[4];
+let color = colorPalettes[0];
 
 let canvasColor = [220];
 let wallsColor = [0];
@@ -123,7 +123,7 @@ function draw() {
   background(...canvasColor);
 
   // check if player completed maze:
-  if (player.location === targetCell && player.location !== enemy.location) {
+  if (player.location === targetCell) {
     if (gridSize > 25) {
       noLoop();
     } else {
