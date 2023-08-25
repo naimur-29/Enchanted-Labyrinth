@@ -94,3 +94,77 @@ function handlePlayerMovement() {
     }
   }
 }
+
+function removeRandomWalls(n) {
+  let chosenIndex = [];
+  let customizedGrid = [];
+
+  for (let i = 1; i < gridSize - 2; i++) {
+    for (let k = 1; k < gridSize - 2; k++) {
+      customizedGrid.push(getIndexFrom2d(i, k));
+    }
+  }
+
+  while (n--) {
+    // chose a random cell:
+    let randIndex = floor(random(customizedGrid));
+    let randCell = grid[randIndex];
+
+    while (chosenIndex.includes(randIndex) && randCell.borders.total <= 1) {
+      randIndex = floor(random(0, grid.length));
+      randCell = grid[randIndex];
+    }
+    chosenIndex.push(randIndex);
+
+    // chose a random wall:
+    let randWall = random([0, 1, 2, 3]);
+    let neighbor = randCell.getNeighbor(randWall);
+
+    // remove that wall/border:
+    switch (randWall) {
+      case 0:
+        randCell.borders.TOP = false;
+        randCell.borders.total--;
+
+        if (neighbor) {
+          neighbor.borders.BOTTOM = false;
+          neighbor.borders.total--;
+        }
+
+        break;
+
+      case 1:
+        randCell.borders.RIGHT = false;
+        randCell.borders.total--;
+
+        if (neighbor) {
+          neighbor.borders.LEFT = false;
+          neighbor.borders.total--;
+        }
+
+        break;
+
+      case 2:
+        randCell.borders.BOTTOM = false;
+        randCell.borders.total--;
+
+        if (neighbor) {
+          neighbor.borders.TOP = false;
+          neighbor.borders.total--;
+        }
+
+        break;
+
+      case 3:
+        randCell.borders.LEFT = false;
+        randCell.borders.total--;
+
+        if (neighbor) {
+          neighbor.borders.RIGHT = false;
+          neighbor.borders.total--;
+        }
+
+        break;
+    }
+  }
+}

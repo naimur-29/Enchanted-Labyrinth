@@ -36,6 +36,7 @@ let wallsColor = [0];
 let buildingColor = [255, 255, 255, 200];
 let isVisitedColor = [100, 200, 255, 150];
 let playerVisitedColor = [255, 100, 200];
+let targetColor = [255, 100, 200];
 
 let player;
 let builderCell;
@@ -115,7 +116,7 @@ function draw() {
   }
 
   // target cell/winning checkpoint:
-  if (player.isReady) targetCell.highlight(playerVisitedColor);
+  if (player.isReady) targetCell.highlight(targetColor);
 
   // draw cells:
   for (let cell of grid) {
@@ -145,7 +146,11 @@ function draw() {
   }
 
   // handle player:
-  if (builderCell === grid[0]) {
+  if (!player.isReady && builderCell === grid[0]) {
+    if (gridSize > 5) {
+      removeRandomWalls(gridSize);
+    }
+
     player.isReady = true;
     frameRate(30);
   }
