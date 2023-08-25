@@ -117,54 +117,21 @@ function removeRandomWalls(n) {
     chosenIndex.push(randIndex);
 
     // chose a random wall:
-    let randWall = random([0, 1, 2, 3]);
-    let neighbor = randCell.getNeighbor(randWall);
+    let wallIndices = [0, 1, 2, 3];
+    let cellWalls = [
+      randCell.borders.TOP,
+      randCell.borders.RIGHT,
+      randCell.borders.BOTTOM,
+      randCell.borders.LEFT,
+    ];
+    let randWall = random(wallIndices);
+    while (!cellWalls[randWall]) {
+      wallIndices.slice(wallIndices.indexOf(randWall), 1);
+      randWall = random(wallIndices);
+    }
 
     // remove that wall/border:
-    switch (randWall) {
-      case 0:
-        randCell.borders.TOP = false;
-        randCell.borders.total--;
-
-        if (neighbor) {
-          neighbor.borders.BOTTOM = false;
-          neighbor.borders.total--;
-        }
-
-        break;
-
-      case 1:
-        randCell.borders.RIGHT = false;
-        randCell.borders.total--;
-
-        if (neighbor) {
-          neighbor.borders.LEFT = false;
-          neighbor.borders.total--;
-        }
-
-        break;
-
-      case 2:
-        randCell.borders.BOTTOM = false;
-        randCell.borders.total--;
-
-        if (neighbor) {
-          neighbor.borders.TOP = false;
-          neighbor.borders.total--;
-        }
-
-        break;
-
-      case 3:
-        randCell.borders.LEFT = false;
-        randCell.borders.total--;
-
-        if (neighbor) {
-          neighbor.borders.RIGHT = false;
-          neighbor.borders.total--;
-        }
-
-        break;
-    }
+    cellWalls[randWall] = false;
+    randCell.borders.total--;
   }
 }

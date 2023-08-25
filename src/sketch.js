@@ -8,7 +8,7 @@ Array.prototype.isEmpty = function () {
 
 let canvas, levelText;
 
-let gridSize = 2;
+let gridSize = 10;
 
 let padding = innerWidth > 500 ? 30 : 10;
 
@@ -147,10 +147,9 @@ function draw() {
 
   // handle player:
   if (!player.isReady && builderCell === grid[0]) {
-    if (gridSize > 5) {
+    if (gridSize >= 5) {
       removeRandomWalls(gridSize);
     }
-
     player.isReady = true;
     frameRate(30);
   }
