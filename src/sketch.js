@@ -126,21 +126,54 @@ function draw() {
   if (player.location === targetCell) {
     if (gridSize > 25) {
       noLoop();
+      alert("Congrats!🍾🎊🎉 You've Completed The Game!!");
+
+      setTimeout(() => {
+        gridSize = 5;
+        replay();
+        loop();
+      }, 500);
     } else {
-      gridSize++;
-      replay();
+      noLoop();
+      setTimeout(() => {
+        gridSize++;
+        replay();
+        loop();
+      }, 500);
     }
-
-    document.querySelector(".level-text").textContent =
-      "Level " + String(gridSize - 1 < 10 ? `0${gridSize - 4}` : gridSize - 1);
   }
 
-  // update player lives text:
-  let text = "";
-  for (let p = 0; p < player.lives; p++) {
-    text += "💖";
+  // check if enemy at targetCell; if move to random cell:
+  if (enemy.location === targetCell) {
+    enemy.at(grid[floor(random(1, grid.length))]);
   }
+
+  // check if player touched enemy:
+  if (player.location === enemy.location) {
+    player.at(grid[0]);
+    player.visited = [player.location];
+    player.lives--;
+
+    if (player.lives <= 0) {
+      noLoop();
+      alert("You Lost!! 😔");
+
+      setTimeout(() => {
+        gridSize = 5;
+        replay();
+        player.respawn();
+        loop();
+      }, 500);
+    }
+  }
+
+  // update texts:
+  let text = "❤️".repeat(player.lives);
   document.querySelector(".lives-text").textContent = text;
+
+  text =
+    "Level " + String(gridSize - 1 < 10 ? `0${gridSize - 4}` : gridSize - 1);
+  document.querySelector(".level-text").textContent = text;
 
   // highlight isVisited cells:
   grid.forEach((cell) => {
@@ -187,7 +220,9 @@ function draw() {
 
   // handle player:
   if (!player.isReady && builderCell === grid[0]) {
-    removeRandomWalls(floor(gridSize / 2));
+    if (gridSize > 5) {
+      removeRandomWalls(floor(gridSize / 2));
+    }
 
     player.isReady = true;
     enemy.isReady = true;
@@ -198,24 +233,6 @@ function draw() {
 
     // enemy movement:
     handleEnemyMovement(enemyKeys, enemy);
-
-    // check if enemy at targetCell; if move to random cell:
-    if (enemy.location === targetCell) {
-      enemy.at(grid[floor(random(1, grid.length))]);
-    }
-
-    // check if player touched enemy:
-    if (player.location === enemy.location) {
-      if (player.lives <= 0) {
-        gridSize = 5;
-        player.respawn();
-        replay();
-      } else {
-        player.at(grid[0]);
-        player.visited = [player.location];
-        player.lives--;
-      }
-    }
   }
 }
 
