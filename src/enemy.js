@@ -21,7 +21,7 @@ class Enemy {
 
   draw() {
     if (this.isReady) {
-      fill(0, 0, 0);
+      fill(51, 51, 51);
       noStroke();
       ellipse(this.pos.x, this.pos.y, this.radius);
       stroke(0, 0, 0);

@@ -31,19 +31,56 @@ let playerKeys = {
 };
 
 // colors:
+const colorPalettes = [
+  {
+    playerVisitedColor: [69, 14, 255],
+    isVisitedColor: [69, 14, 255, 100],
+    targetColor: [69, 14, 255],
+  },
+  {
+    playerVisitedColor: [255, 50, 26],
+    isVisitedColor: [255, 50, 26, 100],
+    targetColor: [255, 50, 26],
+  },
+  {
+    playerVisitedColor: [255, 144, 27],
+    isVisitedColor: [255, 144, 27, 100],
+    targetColor: [255, 144, 27],
+  },
+  {
+    playerVisitedColor: [1, 117, 98],
+    isVisitedColor: [2, 181, 159, 100],
+    targetColor: [1, 117, 98],
+  },
+  {
+    playerVisitedColor: [238, 3, 107],
+    isVisitedColor: [238, 3, 107, 100],
+    targetColor: [238, 3, 107],
+  },
+];
+
+let color = colorPalettes[0];
+
 let canvasColor = [220];
 let wallsColor = [0];
 let buildingColor = [255, 255, 255, 200];
-let isVisitedColor = [100, 200, 255, 150];
-let playerVisitedColor = [255, 100, 200];
-let targetColor = [255, 100, 200];
+let isVisitedColor = color.isVisitedColor;
+let playerVisitedColor = color.playerVisitedColor;
+let targetColor = color.targetColor;
 
 let player, enemy;
-let enemyKeys = { ...defaultKeys };
+let enemyKeys;
 let builderCell;
 
 let grid = [];
 let stack = [];
+
+setInterval(() => {
+  enemyKeys = { ...defaultKeys };
+  enemyKeys[
+    ["UP", "LEFT", "DOWN", "RIGHT"][Math.floor(Math.random() * 4)]
+  ] = true;
+}, 500);
 
 function setup() {
   canvas = createCanvas(gridWidth, gridWidth);
@@ -85,7 +122,7 @@ function draw() {
   background(...canvasColor);
 
   // check if player completed maze:
-  if (player.location === targetCell) {
+  if (player.location === targetCell && player.location !== enemy.location) {
     if (gridSize > 25) {
       noLoop();
     } else {
@@ -159,19 +196,7 @@ function draw() {
     handlePlayerMovement();
 
     // enemy movement:
-    if (
-      (playerKeys.UP ||
-        playerKeys.LEFT ||
-        playerKeys.DOWN ||
-        playerKeys.RIGHT) &&
-      !(frameCount % 100)
-    ) {
-      enemyKeys = { ...defaultKeys };
-      enemyKeys[
-        ["UP", "LEFT", "DOWN", "RIGHT"][Math.floor(Math.random() * 4)]
-      ] = true;
-      handleEnemyMovement(enemyKeys, enemy);
-    }
+    handleEnemyMovement(enemyKeys, enemy);
 
     // check if enemy at targetCell; if move to random cell:
     if (enemy.location === targetCell) {

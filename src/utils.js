@@ -1,4 +1,14 @@
 function replay() {
+  // select random color:
+  let color = random(colorPalettes);
+
+  isVisitedColor = color.isVisitedColor;
+  playerVisitedColor = color.playerVisitedColor;
+  targetColor = color.targetColor;
+
+  // change body color:
+  document.body.style.backgroundColor = `rgba(${color.targetColor[0]}, ${color.targetColor[1]}, ${color.targetColor[2]}, 0.2)`;
+
   w = gridWidth / gridSize;
   grid = [];
   stack = [];
