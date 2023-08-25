@@ -1,3 +1,22 @@
+function replay() {
+  w = gridWidth / gridSize;
+  grid = [];
+  stack = [];
+
+  for (let j = 0; j < gridSize; j++) {
+    for (let i = 0; i < gridSize; i++) {
+      let cell = new Cell(i, j);
+      grid.push(cell);
+    }
+  }
+
+  playerKeys = { ...defaultKeys };
+  builderCell = grid[0];
+  targetCell = grid[grid.length - 1];
+  player.spawn();
+  enemy.spawn();
+}
+
 function getIndexFrom2d(i, j) {
   if (i < 0 || i > gridSize - 1 || j < 0 || j > gridSize - 1) return undefined;
 
@@ -39,12 +58,12 @@ function removeWalls(currentCell, nextCell) {
   }
 }
 
-function handlePlayerControl(offset) {
+function getNextCell(offset, object) {
   let cell;
 
   let index = getIndexFrom2d(
-    player.location.index.i + offset[0],
-    player.location.index.j + offset[1]
+    object.location.index.i + offset[0],
+    object.location.index.j + offset[1]
   );
 
   if (index !== undefined) {
@@ -56,40 +75,79 @@ function handlePlayerControl(offset) {
 }
 
 function handlePlayerMovement() {
-  if (keys.UP) {
+  if (playerKeys.UP) {
     if (!player.location.borders.TOP) {
-      let cell = handlePlayerControl([0, -1]);
+      let cell = getNextCell([0, -1], player);
 
       if (cell !== undefined) {
         player.at(cell);
-        if (cell.borders.total <= 1) keys = [0, 0, 0, 0];
+        if (cell.borders.total <= 1) playerKeys = { ...defaultKeys };
+      }
+    }
+  } else if (playerKeys.LEFT) {
+    if (!player.location.borders.LEFT) {
+      let cell = getNextCell([-1, 0], player);
+
+      if (cell !== undefined) {
+        player.at(cell);
+        if (cell.borders.total <= 1) playerKeys = { ...defaultKeys };
+      }
+    }
+  } else if (playerKeys.DOWN) {
+    if (!player.location.borders.BOTTOM) {
+      let cell = getNextCell([0, 1], player);
+
+      if (cell !== undefined) {
+        player.at(cell);
+        if (cell.borders.total <= 1) playerKeys = { ...defaultKeys };
+      }
+    }
+  } else if (playerKeys.RIGHT) {
+    if (!player.location.borders.RIGHT) {
+      let cell = getNextCell([1, 0], player);
+
+      if (cell !== undefined) {
+        player.at(cell);
+        if (cell.borders.total <= 1) playerKeys = { ...defaultKeys };
+      }
+    }
+  }
+}
+
+function handleEnemyMovement(keys, enemy) {
+  if (keys.UP) {
+    if (!enemy.location.borders.TOP) {
+      let cell = getNextCell([0, -1], enemy);
+
+      if (cell !== undefined) {
+        enemy.at(cell);
+        keys = { ...defaultKeys };
       }
     }
   } else if (keys.LEFT) {
     if (!player.location.borders.LEFT) {
-      let cell = handlePlayerControl([-1, 0]);
+      let cell = getNextCell([-1, 0], enemy);
 
       if (cell !== undefined) {
-        player.at(cell);
-        if (cell.borders.total <= 1) keys = [0, 0, 0, 0];
+        enemy.at(cell);
+        keys = { ...defaultKeys };
       }
     }
   } else if (keys.DOWN) {
     if (!player.location.borders.BOTTOM) {
-      let cell = handlePlayerControl([0, 1]);
-
+      let cell = getNextCell([0, 1], enemy);
       if (cell !== undefined) {
-        player.at(cell);
-        if (cell.borders.total <= 1) keys = [0, 0, 0, 0];
+        enemy.at(cell);
+        keys = { ...defaultKeys };
       }
     }
   } else if (keys.RIGHT) {
     if (!player.location.borders.RIGHT) {
-      let cell = handlePlayerControl([1, 0]);
+      let cell = getNextCell([1, 0], enemy);
 
       if (cell !== undefined) {
-        player.at(cell);
-        if (cell.borders.total <= 1) keys = [0, 0, 0, 0];
+        enemy.at(cell);
+        keys = { ...defaultKeys };
       }
     }
   }
@@ -140,7 +198,5 @@ function removeRandomWalls(n) {
 
       chosenIndex.push(getIndexFrom2d(neighbor.index.i, neighbor.index.j));
     }
-
-    console.log(randWall, randCell, neighbor);
   }
 }

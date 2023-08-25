@@ -6,9 +6,9 @@ Array.prototype.isEmpty = function () {
   }
 };
 
-let canvas, levelText;
+let canvas;
 
-let gridSize = 10;
+let gridSize = 5;
 
 let padding = innerWidth > 500 ? 30 : 10;
 
@@ -26,7 +26,7 @@ let defaultKeys = {
   RIGHT: false,
 };
 
-let keys = {
+let playerKeys = {
   ...defaultKeys,
 };
 
@@ -38,9 +38,8 @@ let isVisitedColor = [100, 200, 255, 150];
 let playerVisitedColor = [255, 100, 200];
 let targetColor = [255, 100, 200];
 
-let player,
-  enemies = [];
-let numberOfEnemies = 1;
+let player, enemy;
+let enemyKeys = { ...defaultKeys };
 let builderCell;
 
 let grid = [];
@@ -50,10 +49,6 @@ function setup() {
   canvas = createCanvas(gridWidth, gridWidth);
   canvas.parent(document.querySelector(".game-panel"));
   // frameRate(1);
-
-  levelText = createP("Level 01");
-  levelText.parent(document.querySelector(".game-panel"));
-  levelText.addClass("level-text");
 
   for (let j = 0; j < gridSize; j++) {
     for (let i = 0; i < gridSize; i++) {
@@ -71,14 +66,19 @@ function setup() {
   });
 
   // spawning enemies:
-  for (let ikr = 0; ikr < numberOfEnemies; ikr++) {
-    let enemyLocation = floor(random(1, grid.length - 2));
-    let enemy = new Enemy({
-      location: grid[enemyLocation],
-    });
-    enemies.push(enemy);
-    console.log(enemies);
-  }
+  enemy = new Enemy({
+    location: grid[floor(random(1, grid.length - 2))],
+  });
+
+  // create player lives text:
+  let livesText = createP("");
+  livesText.parent(document.querySelector(".game-panel"));
+  livesText.addClass("lives-text");
+
+  // create level text:
+  let levelText = createP("Level 01");
+  levelText.parent(document.querySelector(".game-panel"));
+  levelText.addClass("level-text");
 }
 
 function draw() {
@@ -86,42 +86,23 @@ function draw() {
 
   // check if player completed maze:
   if (player.location === targetCell) {
-    if (gridSize > 21) {
+    if (gridSize > 25) {
       noLoop();
     } else {
       gridSize++;
-      w = gridWidth / gridSize;
+      replay();
     }
 
-    // update game level:
     document.querySelector(".level-text").textContent =
-      "Level " + String(gridSize - 1 < 10 ? `0${gridSize - 1}` : gridSize - 1);
-
-    player.draw();
-
-    grid = [];
-    stack = [];
-
-    for (let j = 0; j < gridSize; j++) {
-      for (let i = 0; i < gridSize; i++) {
-        let cell = new Cell(i, j);
-        grid.push(cell);
-      }
-    }
-
-    keys = { ...defaultKeys };
-    builderCell = grid[0];
-    targetCell = grid[grid.length - 1];
-    player.at(grid[0]);
-    player.clear();
+      "Level " + String(gridSize - 1 < 10 ? `0${gridSize - 4}` : gridSize - 1);
   }
 
-  // check if player touched enemy:
-  enemies.forEach((e) => {
-    if (player.location === e.location) {
-      player.at(grid[0]);
-    }
-  });
+  // update player lives text:
+  let text = "";
+  for (let p = 0; p < player.lives; p++) {
+    text += "💖";
+  }
+  document.querySelector(".lives-text").textContent = text;
 
   // highlight isVisited cells:
   grid.forEach((cell) => {
@@ -145,7 +126,7 @@ function draw() {
 
   // draw player & enemies:
   player.draw();
-  enemies.forEach((e) => e.draw());
+  enemy.draw();
 
   // highlight cells:
   if (builderCell !== grid[0]) builderCell.highlight(isVisitedColor);
@@ -168,17 +149,46 @@ function draw() {
 
   // handle player:
   if (!player.isReady && builderCell === grid[0]) {
-    if (gridSize >= 5) {
-      removeRandomWalls(floor(gridSize / 2));
-    }
+    removeRandomWalls(floor(gridSize / 2));
 
     player.isReady = true;
-    enemies.forEach((e) => (e.isReady = true));
-    frameRate(30);
+    enemy.isReady = true;
   }
 
   if (player.isReady) {
     handlePlayerMovement();
+
+    // enemy movement:
+    if (
+      (playerKeys.UP ||
+        playerKeys.LEFT ||
+        playerKeys.DOWN ||
+        playerKeys.RIGHT) &&
+      !(frameCount % 100)
+    ) {
+      enemyKeys = { ...defaultKeys };
+      enemyKeys[
+        ["UP", "LEFT", "DOWN", "RIGHT"][Math.floor(Math.random() * 4)]
+      ] = true;
+      handleEnemyMovement(enemyKeys, enemy);
+    }
+
+    // check if enemy at targetCell; if move to random cell:
+    if (enemy.location === targetCell) {
+      enemy.at(grid[floor(random(1, grid.length))]);
+    }
+
+    // check if player touched enemy:
+    if (player.location === enemy.location) {
+      if (player.lives <= 0) {
+        gridSize = 5;
+        replay();
+      } else {
+        player.at(grid[0]);
+        player.visited = [player.location];
+        player.lives--;
+      }
+    }
   }
 }
 
@@ -186,17 +196,17 @@ function draw() {
 window.addEventListener("keypress", (event) => {
   if (player.isReady) {
     if (event.key.toLocaleLowerCase() === "w") {
-      keys = { ...defaultKeys };
-      keys.UP = true;
+      playerKeys = { ...defaultKeys };
+      playerKeys.UP = true;
     } else if (event.key.toLocaleLowerCase() === "a") {
-      keys = { ...defaultKeys };
-      keys.LEFT = true;
+      playerKeys = { ...defaultKeys };
+      playerKeys.LEFT = true;
     } else if (event.key.toLocaleLowerCase() === "s") {
-      keys = { ...defaultKeys };
-      keys.DOWN = true;
+      playerKeys = { ...defaultKeys };
+      playerKeys.DOWN = true;
     } else if (event.key.toLocaleLowerCase() === "d") {
-      keys = { ...defaultKeys };
-      keys.RIGHT = true;
+      playerKeys = { ...defaultKeys };
+      playerKeys.RIGHT = true;
     }
   }
 });
@@ -209,28 +219,28 @@ const downBtn = document.getElementById("DOWN");
 
 leftBtn.onpointerdown = function () {
   if (player.isReady) {
-    keys = { ...defaultKeys };
-    keys.LEFT = true;
+    playerKeys = { ...defaultKeys };
+    playerKeys.LEFT = true;
   }
 };
 
 rightBtn.onpointerdown = function () {
   if (player.isReady) {
-    keys = { ...defaultKeys };
-    keys.RIGHT = true;
+    playerKeys = { ...defaultKeys };
+    playerKeys.RIGHT = true;
   }
 };
 
 upBtn.onpointerdown = function () {
   if (player.isReady) {
-    keys = { ...defaultKeys };
-    keys.UP = true;
+    playerKeys = { ...defaultKeys };
+    playerKeys.UP = true;
   }
 };
 
 downBtn.onpointerdown = function () {
   if (player.isReady) {
-    keys = { ...defaultKeys };
-    keys.DOWN = true;
+    playerKeys = { ...defaultKeys };
+    playerKeys.DOWN = true;
   }
 };

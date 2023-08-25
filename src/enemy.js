@@ -7,7 +7,6 @@ class Enemy {
     };
     this.isReady = false;
     this.radius = w - w / 5;
-    this.visited = [this.location];
   }
 
   at(cell) {
@@ -17,10 +16,6 @@ class Enemy {
         x: this.location.index.i * w + w / 2,
         y: this.location.index.j * w + w / 2,
       };
-
-      if (!this.visited.includes(cell)) {
-        this.visited.push(cell);
-      }
     }
   }
 
@@ -33,9 +28,10 @@ class Enemy {
     }
   }
 
-  clear() {
+  spawn() {
+    this.location = grid[floor(random(1, grid.length - 2))];
+    this.at(this.location);
     this.isReady = false;
     this.radius = w - w / 5;
-    this.visited = [this.location];
   }
 }

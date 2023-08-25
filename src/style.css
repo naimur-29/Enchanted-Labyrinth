@@ -31,14 +31,20 @@ canvas {
   border: 3px solid black;
 }
 
-.level-text {
+.level-text,
+.lives-text {
   font-family: monospace;
   font-size: xxx-large;
   font-weight: 500;
 }
 
+.lives-text {
+  margin-bottom: -28px;
+}
+
 @media (max-width: 500px) {
-  .level-text {
+  .level-text,
+  .lives-text {
     font-size: xx-large;
   }
 }
