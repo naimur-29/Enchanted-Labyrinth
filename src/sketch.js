@@ -81,7 +81,7 @@ setInterval(() => {
   enemyKeys[
     ["UP", "LEFT", "DOWN", "RIGHT"][Math.floor(Math.random() * 4)]
   ] = true;
-}, 500);
+}, 1000);
 
 function setup() {
   canvas = createCanvas(gridWidth, gridWidth);
