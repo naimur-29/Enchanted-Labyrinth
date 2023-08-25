@@ -125,8 +125,8 @@ function draw() {
   // check if player completed maze:
   if (player.location === targetCell) {
     if (gridSize > 21) {
+      window.navigator.vibrate([200, 20, 200]);
       noLoop();
-      window.navigator.vibrate([200, 100, 200]);
       alert("Congrats!🍾🎊🎉 You've Completed The Game!!");
 
       setTimeout(() => {
@@ -162,8 +162,8 @@ function draw() {
     window.navigator.vibrate(200);
 
     if (player.lives <= 0) {
+      window.navigator.vibrate([200, 20, 200]);
       noLoop();
-      window.navigator.vibrate([200, 100, 200]);
       alert("You Lost!! 😔");
 
       setTimeout(() => {
