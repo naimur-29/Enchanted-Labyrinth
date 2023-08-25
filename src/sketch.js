@@ -137,6 +137,9 @@ function draw() {
       noLoop();
       setTimeout(() => {
         gridSize++;
+        if (player.lives < 3) {
+          player.lives++;
+        }
         replay();
         loop();
       }, 500);
@@ -226,6 +229,9 @@ function draw() {
   if (!player.isReady && builderCell === grid[0]) {
     if (gridSize > 5) {
       removeRandomWalls(floor(gridSize / 2));
+    }
+
+    if (gridSize > 5) {
       enemy = new Enemy({
         location: grid[floor(random(1, grid.length - 2))],
       });

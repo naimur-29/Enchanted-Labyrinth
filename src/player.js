@@ -8,7 +8,7 @@ class Player {
     this.isReady = false;
     this.radius = w - w / 5;
     this.visited = [this.location];
-    this.lives = 3;
+    this.lives = 1;
   }
 
   at(cell) {
@@ -35,7 +35,12 @@ class Player {
   }
 
   respawn() {
-    this.lives = 3;
+    this.lives = 1;
+    this.location = grid[0];
+    this.at(this.location);
+    this.isReady = false;
+    this.radius = w - w / 5;
+    this.visited = [this.location];
   }
 
   spawn() {
